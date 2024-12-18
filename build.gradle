@@ -1,0 +1,54 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.5'
+	id 'io.spring.dependency-management' version '1.1.6'
+	id 'com.github.johnrengelman.shadow' version '7.1.2' // Gradle 7.x용 Shadow 플러그인
+}
+
+group = 'com.demo'
+version = '0.1.0'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'io.swagger.core.v3:swagger-models:2.2.10'
+	implementation 'io.swagger.parser.v3:swagger-parser:2.1.16'
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+	implementation 'org.springframework.boot:spring-boot-starter'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// Shadow 플러그인 설정
+tasks.named('shadowJar') {
+	manifest {
+		attributes 'Main-Class': 'com.demo.jgen.OpenApiCodeGenerator'
+	}
+	archiveBaseName.set('OpenApiCodeGeneratorApp')
+	archiveVersion.set('0.1.0')
+	archiveClassifier.set('') // 분류자 제거 (기본값)
+}
+
+// Spring Boot 관련 설정 비활성화
+bootJar {
+	enabled = false // Fat JAR만 생성하기 위해 Spring Boot JAR 비활성화
+}
+
+jar {
+	enabled = false // 기본 JAR도 비활성화
+}
